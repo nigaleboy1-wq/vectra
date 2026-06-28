@@ -25,19 +25,31 @@ const NAV_ITEMS = [
 ];
 
 function DashboardShell({ children }: { children: ReactNode }) {
-  const { isAuthed, logout } = useDashboardAuth();
+  const { isAuthed, isReady, logout } = useDashboardAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Redirect logic: login → dashboard si authentifié, dashboard → login si non
   useEffect(() => {
+    if (!isReady) return;
     if (!isAuthed && pathname !== "/dashboard/login") {
       router.replace("/dashboard/login");
     } else if (isAuthed && pathname === "/dashboard/login") {
       router.replace("/dashboard");
     }
-  }, [isAuthed, pathname, router]);
+  }, [isAuthed, isReady, pathname, router]);
+
+  // Attendre que l'auth soit prête avant de rendre quoi que ce soit
+  if (!isReady) {
+    return (
+      <div className="min-h-screen bg-[#2b2344] flex items-center justify-center">
+        <div className="text-white/40 text-[14px]" style={{ fontFamily: "var(--font-inter)" }}>
+          Chargement…
+        </div>
+      </div>
+    );
+  }
 
   // Login page renders without shell
   if (pathname === "/dashboard/login") {
