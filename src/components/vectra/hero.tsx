@@ -30,7 +30,7 @@ export default function Hero() {
       className="relative min-h-screen w-full overflow-hidden bg-[#2b2344]"
       aria-label="Hero Vectra"
     >
-      {/* Full-screen video background — decorative */}
+      {/* Full-screen video background — visible, no overlay */}
       <video
         className="absolute inset-0 h-full w-full object-cover"
         autoPlay
@@ -43,33 +43,33 @@ export default function Hero() {
         <source src={VIDEO_URL} type="video/mp4" />
       </video>
 
-      {/* Full-coverage dark scrim — uniform opacity for readability across all breakpoints */}
+      {/* Top vignette — very subtle, only to keep navbar readable */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 z-[5]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-32 z-[5]"
         style={{
           background:
-            "linear-gradient(180deg, rgba(26,21,48,0.82) 0%, rgba(26,21,48,0.88) 50%, rgba(26,21,48,0.95) 100%)",
+            "linear-gradient(to bottom, rgba(26,21,48,0.55) 0%, transparent 100%)",
         }}
       />
 
-      {/* Subtle radial accent — adds depth without sacrificing contrast */}
+      {/* Subtle violet ambient accent — very low opacity, doesn't mask the video */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-[5]"
         style={{
           background:
-            "radial-gradient(ellipse 70% 60% at 30% 40%, rgba(123,57,252,0.18) 0%, transparent 60%)",
+            "radial-gradient(ellipse 60% 50% at 25% 35%, rgba(123,57,252,0.15) 0%, transparent 60%)",
         }}
       />
 
       {/* Bottom gradient fade — smooth transition into next section */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-48 z-[6]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-56 z-[6]"
         style={{
           background:
-            "linear-gradient(to bottom, transparent 0%, rgba(43,35,68,0.6) 60%, #2b2344 100%)",
+            "linear-gradient(to bottom, transparent 0%, rgba(43,35,68,0.5) 50%, #2b2344 100%)",
         }}
       />
 
@@ -86,8 +86,8 @@ export default function Hero() {
           className="px-6 lg:px-[120px] pt-28 lg:pt-32 text-center lg:text-left"
         >
           <p
-            className="text-white/70 text-[13px] tracking-wider uppercase"
-            style={{ fontFamily: "var(--font-manrope)" }}
+            className="text-white/85 text-[13px] tracking-wider uppercase"
+            style={{ fontFamily: "var(--font-manrope)", textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}
           >
             Studio Vectra
             <span aria-hidden="true" className="mx-2 text-white/30">·</span>
@@ -111,6 +111,7 @@ export default function Hero() {
               style={{
                 fontFamily: "var(--font-instrument-serif)",
                 fontSize: "clamp(2.75rem, 11vw, 7.5rem)",
+                textShadow: "0 2px 30px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.4)",
               }}
             >
               <motion.span variants={lineChild(reduce)} className="block">
@@ -129,8 +130,8 @@ export default function Hero() {
               initial={{ opacity: 0, y: reduce ? 0 : 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: reduce ? 0 : 0.7, delay: 0.7 }}
-              className="mt-8 max-w-[520px] text-white/80 text-[17px] leading-relaxed"
-              style={{ fontFamily: "var(--font-inter)" }}
+              className="mt-8 max-w-[520px] text-white/90 text-[17px] leading-relaxed"
+              style={{ fontFamily: "var(--font-inter)", textShadow: "0 1px 12px rgba(0,0,0,0.7)" }}
             >
               Des solutions web sur mesure, des applications personnalisées et
               des expériences numériques fluides — conçues avec un développement
@@ -171,7 +172,7 @@ export default function Hero() {
               ease: [0.22, 1, 0.36, 1],
             }}
             aria-label="Journal de bord du studio"
-            className="w-full max-w-[420px] lg:max-w-none lg:w-[300px] shrink-0 rounded-xl border border-white/15 bg-[rgba(26,21,48,0.55)] backdrop-blur-md p-6"
+            className="w-full max-w-[420px] lg:max-w-none lg:w-[300px] shrink-0 rounded-xl border border-white/20 bg-[rgba(26,21,48,0.75)] backdrop-blur-xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
           >
             <div
               className="flex items-center justify-between text-[11px] uppercase tracking-wider text-white/55 pb-3 border-b border-white/10"
