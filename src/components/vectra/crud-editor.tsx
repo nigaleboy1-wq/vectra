@@ -374,7 +374,7 @@ function EditModal({
                     )}
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/*,.png,.jpg,.jpeg,.gif,.webp,.svg,.bmp,.avif,.ico,.tiff,.tif"
                       className="hidden"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
