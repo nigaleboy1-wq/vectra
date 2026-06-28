@@ -116,6 +116,51 @@ src/
 - **Accessibilité** : skip-link, focus-visible, ARIA, reduced-motion, focus trap, landmarks sémantiques
 - **Responsive** mobile-first
 
+## Dashboard d'administration
+
+Le site inclut un dashboard d'administration accessible sur `/dashboard`.
+
+### Accès
+- URL : `https://votre-site.vercel.app/dashboard`
+- Mot de passe : `bienvenuverctradanslegame`
+
+### Fonctionnalités du dashboard
+- **Overview** : analytics en temps réel (visiteurs uniques, pages vues, clics CTA, graphs 7 jours, breakdowns par section/CTA)
+- **Services** : CRUD complet des 7 cartes du carrousel services (titre, description, icône, ordre)
+- **Projets** : CRUD complet des 6 projets portfolio (titre, catégorie, description, domaine, année, couleurs)
+- **Témoignages** : CRUD complet des témoignages clients (nom, rôle, citation, initiales, accent)
+- **Statistiques** : CRUD des 4 stats du StatsBand (libellé, valeur, suffixe, décimales)
+
+### Analytics
+Le tracker analytics enregistre automatiquement :
+- **Sessions visiteurs** (visiteurs uniques par jour)
+- **Pages vues** (par section : hero, work, gallery, process, testimonials, contact)
+- **Clics CTA** (sur "Lancer un projet", "Contact", "Voir nos réalisations", etc.)
+
+Les données sont stockées dans la base Prisma et consultables dans le dashboard.
+
+### Base de données — Supabase
+
+Le schéma Prisma est compatible SQLite (local) et PostgreSQL (Supabase).
+
+**Pour connecter Supabase en production :**
+
+1. Créez un projet sur [supabase.com](https://supabase.com)
+2. Récupérez l'URL de connexion dans Settings → Database
+3. Changez le provider dans `prisma/schema.prisma` :
+   ```prisma
+   datasource db {
+     provider = "postgresql"
+     url      = env("DATABASE_URL")
+   }
+   ```
+4. Ajoutez la variable d'environnement dans Vercel :
+   ```
+   DATABASE_URL=postgresql://postgres:password@db.xxx.supabase.co:5432/postgres
+   ```
+5. Poussez le schéma : `bun run db:push`
+6. Seed les données initiales : `bun run db:seed`
+
 ## Licence
 
 © Vectra Studio. Tous droits réservés.

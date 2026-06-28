@@ -1,32 +1,87 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Prisma schema for Vectra — SQLite for local dev, Supabase Postgres for prod
+// To use Supabase: change provider to "postgresql" and set DATABASE_URL to your Supabase connection string
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
+  // For Supabase: change to "postgresql" and set DATABASE_URL=postgresql://...
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-model User {
+// ===== Content models (editable via dashboard) =====
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  iconName    String   @default("Code2") // Lucide icon name
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Project {
+  id            String   @id @default(cuid())
+  title         String
+  category      String
+  description   String
+  domain        String
+  year          String
+  mockupFrom    String   @default("#7b39fc") // gradient start
+  mockupTo      String   @default("#2b2344") // gradient end
+  accent        String   @default("#c4a4ff")
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Testimonial {
   id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
+  quote     String
+  name      String
+  role      String
+  initials  String
+  accent    String   @default("from-[#7b39fc] to-[#a484d7]")
+  order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Post {
+model Stat {
   id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
+  label     String
+  value     Float
+  suffix    String   @default("")
+  decimals  Int      @default(0)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ===== Analytics =====
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  type      String   // "page_view" | "cta_click" | "session_start"
+  name      String   // e.g. "hero", "work", "Lancer un projet"
+  visitorId String   // anonymous visitor ID (localStorage)
+  path      String?
+  referrer  String?
+  createdAt DateTime @default(now())
+
+  @@index([type, createdAt])
+  @@index([visitorId])
+}
+
+model DailyStat {
+  id        String   @id @default(cuid())
+  date      String   @unique // YYYY-MM-DD
+  visitors  Int      @default(0)
+  pageViews Int      @default(0)
+  ctaClicks Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

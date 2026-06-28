@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from "react";
 import Navbar from "@/components/vectra/navbar";
 import Hero from "@/components/vectra/hero";
 import StatsBand from "@/components/vectra/stats-band";
@@ -10,22 +11,20 @@ import TestimonialsSection from "@/components/vectra/testimonials-section";
 import CTASection from "@/components/vectra/cta-section";
 import Footer from "@/components/vectra/footer";
 import ErrorBoundary from "@/components/vectra/error-boundary";
+import { trackSessionStart } from "@/components/vectra/analytics";
 
 export default function Home() {
+  useEffect(() => {
+    trackSessionStart();
+  }, []);
+
   return (
     <>
-      {/* Navbar (fixed, overlays everything) */}
       <Navbar />
-
       <main className="relative w-full overflow-x-hidden bg-[#2b2344]" aria-label="Contenu principal">
         <ErrorBoundary>
-          {/* Hero (with video background + bottom gradient fade) */}
           <Hero />
-
-          {/* Floating stats band — overlaps Hero bottom and Work top */}
           <StatsBand />
-
-          {/* Page sections */}
           <WorkSection />
           <ProjectGallerySection />
           <ProcessSection />

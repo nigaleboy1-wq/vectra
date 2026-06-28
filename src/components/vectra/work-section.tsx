@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useMotionValue, useTransform, animate, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { Reveal } from "./animations";
+import { useSectionTracking, trackCtaClick } from "./analytics";
 
 type Project = {
   title: string;

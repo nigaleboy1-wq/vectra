@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import SectionHeadingComponent from "./section-heading";
+import { useSectionTracking, trackCtaClick } from "./analytics";
 
 type Step = {
   no: string;

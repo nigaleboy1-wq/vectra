@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Reveal } from "./animations";
+import { useSectionTracking, trackCtaClick } from "./analytics";
 
 export default function CTASection() {
   return (

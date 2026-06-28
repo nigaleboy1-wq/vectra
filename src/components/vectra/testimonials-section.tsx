@@ -5,6 +5,7 @@ import { motion, useMotionValue, useTransform, animate, useReducedMotion } from 
 import { Star, ArrowLeft, ArrowRight } from "lucide-react";
 import { Reveal } from "./animations";
 import SectionHeading from "./section-heading";
+import { useSectionTracking, trackCtaClick } from "./analytics";
 
 type Testimonial = {
   quote: string;
