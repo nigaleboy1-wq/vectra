@@ -14,6 +14,7 @@ import {
   X,
   ExternalLink,
   AlertTriangle,
+  ListChecks,
 } from "lucide-react";
 import { DashboardAuthProvider, useDashboardAuth } from "@/components/vectra/dashboard-auth";
 
@@ -60,6 +61,7 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/services", label: "Services", icon: Briefcase },
   { href: "/dashboard/projects", label: "Projets", icon: FolderKanban },
+  { href: "/dashboard/process", label: "Processus", icon: ListChecks },
   { href: "/dashboard/testimonials", label: "Témoignages", icon: Quote },
   { href: "/dashboard/stats", label: "Statistiques", icon: BarChart3 },
 ];

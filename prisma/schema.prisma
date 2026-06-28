@@ -61,6 +61,18 @@ model Stat {
   updatedAt DateTime @updatedAt
 }
 
+model ProcessStep {
+  id          String   @id @default(cuid())
+  no          String   // "01", "02", "03", "04"
+  title       String
+  duration    String   // "Semaine 1", etc.
+  description String
+  deliverables String  @default("[]") // JSON array of strings
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 // ===== Analytics =====
 
 model AnalyticsEvent {

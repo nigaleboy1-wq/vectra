@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { useState, useEffect } from "react";
 import SectionHeadingComponent from "./section-heading";
 import { useSectionTracking, trackCtaClick } from "./analytics";
 
@@ -49,6 +50,19 @@ const STEPS: Step[] = [
 ];
 
 export default function ProcessSection() {
+  const [items, setItems] = useState(STEPS);
+
+  useEffect(() => {
+    fetch("/api/process-steps")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setItems(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section
       id="process"
@@ -85,7 +99,7 @@ export default function ProcessSection() {
             className="hidden md:block absolute left-[88px] top-4 bottom-4 w-px bg-gradient-to-b from-[rgba(164,132,215,0.5)] via-white/10 to-transparent"
           />
 
-          {STEPS.map((step, i) => (
+          {items.map((step: any, i: number) => (
             <motion.li
               key={step.no}
               initial={{ opacity: 0, y: 28 }}
