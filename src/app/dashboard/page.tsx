@@ -72,9 +72,9 @@ export default function DashboardOverview() {
 
   // Ensure all fields exist with defaults
   const totals = data.totals || { visitors: 0, uniqueVisitors: 0, pageViews: 0, ctaClicks: 0 };
-  const today = today || { visitors: 0, pageViews: 0, ctaClicks: 0 };
-  const ctaBreakdown = ctaBreakdown || {};
-  const pageViewBreakdown = pageViewBreakdown || {};
+  const today = data.today || { visitors: 0, pageViews: 0, ctaClicks: 0 };
+  const ctaBreakdown = data.ctaBreakdown || {};
+  const pageViewBreakdown = data.pageViewBreakdown || {};
 
   const last7Days = (data.daily || []).slice(-7);
   const visitorsData = last7Days.map((d) => d.visitors);

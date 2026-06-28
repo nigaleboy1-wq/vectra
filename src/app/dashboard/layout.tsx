@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, Component, type ReactNode, type ErrorInfo } from "react";
 import {
   LayoutDashboard,
   Briefcase,
@@ -13,8 +13,48 @@ import {
   Menu,
   X,
   ExternalLink,
+  AlertTriangle,
 } from "lucide-react";
 import { DashboardAuthProvider, useDashboardAuth } from "@/components/vectra/dashboard-auth";
+
+// Error boundary pour éviter que toute la page crash
+class DashboardErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("[Dashboard Error]", error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center gap-4 py-20 text-center">
+          <AlertTriangle className="h-10 w-10 text-amber-400" aria-hidden="true" />
+          <h2 className="text-white text-lg font-semibold" style={{ fontFamily: "var(--font-manrope)" }}>
+            Une erreur est survenue
+          </h2>
+          <p className="text-white/60 text-[14px] max-w-md" style={{ fontFamily: "var(--font-inter)" }}>
+            {this.state.error?.message || "Erreur inconnue. Rechargez la page ou réessayez."}
+          </p>
+          <button
+            onClick={() => this.setState({ hasError: false, error: null })}
+            className="mt-2 rounded-lg bg-[#7b39fc] px-4 py-2 text-white text-[13px] font-semibold hover:bg-[#8a4dff]"
+          >
+            Réessayer
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -29,19 +69,25 @@ function DashboardShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   // Redirect logic: login → dashboard si authentifié, dashboard → login si non
   useEffect(() => {
-    if (!isReady) return;
+    if (!isReady || !mounted) return;
     if (!isAuthed && pathname !== "/dashboard/login") {
       router.replace("/dashboard/login");
     } else if (isAuthed && pathname === "/dashboard/login") {
       router.replace("/dashboard");
     }
-  }, [isAuthed, isReady, pathname, router]);
+  }, [isAuthed, isReady, mounted, pathname, router]);
 
-  // Attendre que l'auth soit prête avant de rendre quoi que ce soit
-  if (!isReady) {
+  // Ne rien rendre côté serveur — attendre le montage client
+  if (!mounted) {
     return (
       <div className="min-h-screen bg-[#2b2344] flex items-center justify-center">
         <div className="text-white/40 text-[14px]" style={{ fontFamily: "var(--font-inter)" }}>
@@ -57,7 +103,13 @@ function DashboardShell({ children }: { children: ReactNode }) {
   }
 
   if (!isAuthed) {
-    return null;
+    return (
+      <div className="min-h-screen bg-[#2b2344] flex items-center justify-center">
+        <div className="text-white/40 text-[14px]" style={{ fontFamily: "var(--font-inter)" }}>
+          Redirection…
+        </div>
+      </div>
+    );
   }
 
   const handleLogout = () => {
@@ -198,7 +250,9 @@ function DashboardShell({ children }: { children: ReactNode }) {
 
       {/* Main content */}
       <main className="flex-1 overflow-y-auto pt-16 lg:pt-0">
-        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto">{children}</div>
+        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto">
+          <DashboardErrorBoundary>{children}</DashboardErrorBoundary>
+        </div>
       </main>
     </div>
   );
