@@ -117,15 +117,15 @@ export default function CrudEditor({
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
           <h1
-            className="text-white text-3xl font-semibold mb-1"
+            className="text-white text-2xl sm:text-3xl font-semibold mb-1 truncate"
             style={{ fontFamily: "var(--font-instrument-serif)" }}
           >
             {title}
           </h1>
-          <p className="text-white/50 text-[14px]" style={{ fontFamily: "var(--font-inter)" }}>
+          <p className="text-white/50 text-[13px] sm:text-[14px]" style={{ fontFamily: "var(--font-inter)" }}>
             {items.length} {itemName}(s)
           </p>
         </div>
@@ -135,38 +135,38 @@ export default function CrudEditor({
             setEditing(null);
             setError(null);
           }}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#7b39fc] px-4 py-2.5 text-white text-[13px] font-semibold hover:bg-[#8a4dff] transition-all"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#7b39fc] px-3 sm:px-4 py-2 sm:py-2.5 text-white text-[13px] font-semibold hover:bg-[#8a4dff] active:scale-95 transition-all shrink-0 touch-manipulation"
           style={{ fontFamily: "var(--font-manrope)" }}
         >
-          <Plus className="h-4 w-4" strokeWidth={2} />
-          Ajouter
+          <Plus className="h-4 w-4 shrink-0" strokeWidth={2} />
+          <span className="hidden sm:inline">Ajouter</span>
         </button>
       </div>
 
       {/* Error banner */}
       {error && (
-        <div className="flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-4">
+        <div className="flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-3 sm:p-4">
           <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <p className="text-red-400 text-[13px] font-medium" style={{ fontFamily: "var(--font-inter)" }}>
               Erreur
             </p>
-            <p className="text-white/70 text-[12px] mt-0.5" style={{ fontFamily: "var(--font-inter)" }}>
+            <p className="text-white/70 text-[12px] mt-0.5 break-words" style={{ fontFamily: "var(--font-inter)" }}>
               {error}
             </p>
           </div>
-          <button onClick={() => setError(null)} className="text-white/40 hover:text-white">
+          <button onClick={() => setError(null)} className="text-white/40 hover:text-white shrink-0">
             <X className="h-4 w-4" />
           </button>
         </div>
       )}
 
       {/* Items list */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {items.map((item, i) => (
           <div
             key={item.id}
-            className="group relative rounded-xl border border-white/10 bg-white/[0.03] p-5 hover:border-[rgba(164,132,215,0.4)] transition-colors"
+            className="group relative rounded-xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 hover:border-[rgba(164,132,215,0.4)] active:border-[rgba(164,132,215,0.3)] transition-colors"
           >
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-2">
@@ -289,23 +289,23 @@ function EditModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[560px] max-h-[90vh] overflow-y-auto rounded-2xl border border-white/15 bg-[#2b2344] shadow-2xl"
+        className="w-full max-w-[560px] max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl border border-white/15 bg-[#2b2344] shadow-2xl animate-in slide-in-from-bottom sm:slide-in-from-bottom-2"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 bg-[#2b2344] z-10">
-          <h2 className="text-white text-lg font-semibold" style={{ fontFamily: "var(--font-manrope)" }}>
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-white/10 sticky top-0 bg-[#2b2344] z-10 safe-area-top">
+          <h2 className="text-white text-base sm:text-lg font-semibold truncate" style={{ fontFamily: "var(--font-manrope)" }}>
             {item ? "Modifier" : "Créer"} — {itemName}
           </h2>
-          <button onClick={onClose} className="text-white/50 hover:text-white p-1" aria-label="Fermer">
+          <button onClick={onClose} className="text-white/50 hover:text-white active:text-white p-2 -mr-2 shrink-0 touch-manipulation" aria-label="Fermer">
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 flex flex-col gap-4">
           {fields.map((field) => (
             <div key={field.key} className="flex flex-col gap-1.5">
               <label className="text-white/75 text-[12px] font-medium" style={{ fontFamily: "var(--font-cabin)" }}>
@@ -413,11 +413,11 @@ function EditModal({
             </div>
           ))}
 
-          <div className="flex items-center gap-3 mt-2">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mt-2 pb-4 sm:pb-0">
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#7b39fc] px-5 py-2.5 text-white text-[14px] font-semibold hover:bg-[#8a4dff] disabled:opacity-60 disabled:cursor-wait transition-all"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#7b39fc] px-5 py-3 sm:py-2.5 text-white text-[14px] font-semibold hover:bg-[#8a4dff] active:scale-[0.98] disabled:opacity-60 disabled:cursor-wait transition-all touch-manipulation"
               style={{ fontFamily: "var(--font-cabin)" }}
             >
               {saving ? (
@@ -435,7 +435,7 @@ function EditModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-white/15 px-5 py-2.5 text-white/70 text-[14px] hover:bg-white/5 transition-all"
+              className="rounded-lg border border-white/15 px-5 py-3 sm:py-2.5 text-white/70 text-[14px] hover:bg-white/5 active:scale-[0.98] transition-all touch-manipulation"
               style={{ fontFamily: "var(--font-cabin)" }}
             >
               Annuler

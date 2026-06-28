@@ -97,31 +97,31 @@ export default function DashboardOverview() {
       </div>
 
       {/* Metric cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {METRIC_CARDS.map((card) => {
           const Icon = card.icon;
           const value = totals[card.key as keyof typeof totals];
           return (
             <div
               key={card.key}
-              className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 hover:border-[rgba(164,132,215,0.4)] transition-colors"
+              className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-5 hover:border-[rgba(164,132,215,0.4)] transition-colors"
             >
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2 sm:mb-3">
                 <div
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg"
+                  className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg"
                   style={{ background: `${card.color}25`, color: card.color }}
                 >
                   <Icon className="h-4 w-4" strokeWidth={2} />
                 </div>
               </div>
               <div
-                className="text-white text-3xl font-semibold"
+                className="text-white text-2xl sm:text-3xl font-semibold"
                 style={{ fontFamily: "var(--font-instrument-serif)" }}
               >
                 {value.toLocaleString("fr-FR")}
               </div>
               <div
-                className="text-white/50 text-[12px] mt-1"
+                className="text-white/50 text-[11px] sm:text-[12px] mt-1"
                 style={{ fontFamily: "var(--font-cabin)" }}
               >
                 {card.label}
@@ -206,7 +206,7 @@ export default function DashboardOverview() {
                   const max = Math.max(...Object.values(ctaBreakdown));
                   return (
                     <div key={name} className="flex items-center gap-3">
-                      <div className="w-[140px] text-white/70 text-[12px] truncate" style={{ fontFamily: "var(--font-inter)" }}>
+                      <div className="w-[100px] sm:w-[140px] text-white/70 text-[12px] truncate" style={{ fontFamily: "var(--font-inter)" }}>
                         {name}
                       </div>
                       <div className="flex-1 h-6 rounded bg-white/5 overflow-hidden">
@@ -238,7 +238,7 @@ export default function DashboardOverview() {
                   const max = Math.max(...Object.values(pageViewBreakdown));
                   return (
                     <div key={name} className="flex items-center gap-3">
-                      <div className="w-[140px] text-white/70 text-[12px] truncate" style={{ fontFamily: "var(--font-inter)" }}>
+                      <div className="w-[100px] sm:w-[140px] text-white/70 text-[12px] truncate" style={{ fontFamily: "var(--font-inter)" }}>
                         {name}
                       </div>
                       <div className="flex-1 h-6 rounded bg-white/5 overflow-hidden">

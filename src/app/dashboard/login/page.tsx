@@ -23,20 +23,20 @@ export default function DashboardLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#2b2344] flex items-center justify-center px-6">
+    <div className="min-h-screen bg-[#2b2344] flex items-center justify-center px-4 sm:px-6 safe-area-top safe-area-bottom">
       <div className="w-full max-w-[420px]">
-        <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#7b39fc] to-[#5b2db8] mb-5 shadow-[0_10px_30px_rgba(123,57,252,0.4)]">
-            <Lock className="h-6 w-6 text-white" strokeWidth={2} />
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#7b39fc] to-[#5b2db8] mb-4 sm:mb-5 shadow-[0_10px_30px_rgba(123,57,252,0.4)]">
+            <Lock className="h-5 w-5 sm:h-6 sm:w-6 text-white" strokeWidth={2} />
           </div>
           <h1
-            className="text-white text-3xl font-semibold mb-2"
+            className="text-white text-2xl sm:text-3xl font-semibold mb-2"
             style={{ fontFamily: "var(--font-instrument-serif)" }}
           >
             Dashboard Vectra
           </h1>
           <p
-            className="text-white/60 text-[14px]"
+            className="text-white/60 text-[13px] sm:text-[14px]"
             style={{ fontFamily: "var(--font-inter)" }}
           >
             Entrez le mot de passe pour accéder à l'administration
@@ -75,7 +75,7 @@ export default function DashboardLoginPage() {
 
           <button
             type="submit"
-            className="h-12 rounded-[10px] bg-[#7b39fc] text-white text-[15px] font-semibold flex items-center justify-center gap-2 hover:bg-[#8a4dff] hover:shadow-[0_10px_30px_rgba(123,57,252,0.45)] transition-all group"
+            className="h-12 sm:h-13 rounded-[10px] bg-[#7b39fc] text-white text-[15px] font-semibold flex items-center justify-center gap-2 hover:bg-[#8a4dff] active:scale-[0.98] hover:shadow-[0_10px_30px_rgba(123,57,252,0.45)] transition-all group touch-manipulation"
             style={{ fontFamily: "var(--font-cabin)" }}
           >
             Se connecter
