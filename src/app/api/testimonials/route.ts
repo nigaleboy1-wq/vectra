@@ -7,7 +7,7 @@ export async function GET() {
     return NextResponse.json(testimonials);
   } catch (error) {
     console.error("GET /api/testimonials error:", error);
-    return NextResponse.json({ error: "Failed to fetch testimonials" }, { status: 500 });
+    return NextResponse.json([]);
   }
 }
 

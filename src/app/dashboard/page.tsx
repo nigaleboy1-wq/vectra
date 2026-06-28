@@ -70,7 +70,13 @@ export default function DashboardOverview() {
     );
   }
 
-  const last7Days = data.daily.slice(-7);
+  // Ensure all fields exist with defaults
+  const totals = data.totals || { visitors: 0, uniqueVisitors: 0, pageViews: 0, ctaClicks: 0 };
+  const today = today || { visitors: 0, pageViews: 0, ctaClicks: 0 };
+  const ctaBreakdown = ctaBreakdown || {};
+  const pageViewBreakdown = pageViewBreakdown || {};
+
+  const last7Days = (data.daily || []).slice(-7);
   const visitorsData = last7Days.map((d) => d.visitors);
   const pageViewsData = last7Days.map((d) => d.pageViews);
   const ctaClicksData = last7Days.map((d) => d.ctaClicks);
@@ -94,7 +100,7 @@ export default function DashboardOverview() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {METRIC_CARDS.map((card) => {
           const Icon = card.icon;
-          const value = data.totals[card.key as keyof typeof data.totals];
+          const value = totals[card.key as keyof typeof totals];
           return (
             <div
               key={card.key}
@@ -136,7 +142,7 @@ export default function DashboardOverview() {
         <div className="grid grid-cols-3 gap-4">
           <div>
             <div className="text-[#c4a4ff] text-2xl font-semibold" style={{ fontFamily: "var(--font-instrument-serif)" }}>
-              {data.today.visitors}
+              {today.visitors}
             </div>
             <div className="text-white/50 text-[12px]" style={{ fontFamily: "var(--font-cabin)" }}>
               Visiteurs
@@ -144,7 +150,7 @@ export default function DashboardOverview() {
           </div>
           <div>
             <div className="text-[#c4a4ff] text-2xl font-semibold" style={{ fontFamily: "var(--font-instrument-serif)" }}>
-              {data.today.pageViews}
+              {today.pageViews}
             </div>
             <div className="text-white/50 text-[12px]" style={{ fontFamily: "var(--font-cabin)" }}>
               Pages vues
@@ -152,7 +158,7 @@ export default function DashboardOverview() {
           </div>
           <div>
             <div className="text-[#c4a4ff] text-2xl font-semibold" style={{ fontFamily: "var(--font-instrument-serif)" }}>
-              {data.today.ctaClicks}
+              {today.ctaClicks}
             </div>
             <div className="text-white/50 text-[12px]" style={{ fontFamily: "var(--font-cabin)" }}>
               Clics CTA
@@ -190,14 +196,14 @@ export default function DashboardOverview() {
           <h3 className="text-white text-[14px] font-semibold mb-4" style={{ fontFamily: "var(--font-manrope)" }}>
             Clics par CTA
           </h3>
-          {Object.keys(data.ctaBreakdown).length === 0 ? (
+          {Object.keys(ctaBreakdown).length === 0 ? (
             <p className="text-white/40 text-[13px]">Aucun clic enregistré</p>
           ) : (
             <div className="flex flex-col gap-3">
-              {Object.entries(data.ctaBreakdown)
+              {Object.entries(ctaBreakdown)
                 .sort((a, b) => b[1] - a[1])
                 .map(([name, count]) => {
-                  const max = Math.max(...Object.values(data.ctaBreakdown));
+                  const max = Math.max(...Object.values(ctaBreakdown));
                   return (
                     <div key={name} className="flex items-center gap-3">
                       <div className="w-[140px] text-white/70 text-[12px] truncate" style={{ fontFamily: "var(--font-inter)" }}>
@@ -222,14 +228,14 @@ export default function DashboardOverview() {
           <h3 className="text-white text-[14px] font-semibold mb-4" style={{ fontFamily: "var(--font-manrope)" }}>
             Vues par section
           </h3>
-          {Object.keys(data.pageViewBreakdown).length === 0 ? (
+          {Object.keys(pageViewBreakdown).length === 0 ? (
             <p className="text-white/40 text-[13px]">Aucune vue enregistrée</p>
           ) : (
             <div className="flex flex-col gap-3">
-              {Object.entries(data.pageViewBreakdown)
+              {Object.entries(pageViewBreakdown)
                 .sort((a, b) => b[1] - a[1])
                 .map(([name, count]) => {
-                  const max = Math.max(...Object.values(data.pageViewBreakdown));
+                  const max = Math.max(...Object.values(pageViewBreakdown));
                   return (
                     <div key={name} className="flex items-center gap-3">
                       <div className="w-[140px] text-white/70 text-[12px] truncate" style={{ fontFamily: "var(--font-inter)" }}>
