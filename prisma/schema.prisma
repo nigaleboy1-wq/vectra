@@ -1,15 +1,13 @@
-// Prisma schema for Vectra
-// Supports both SQLite (local dev) and PostgreSQL (Supabase prod)
-// The provider is auto-detected from DATABASE_URL — just set DATABASE_URL in your env:
-//   - Local dev:  DATABASE_URL="file:./dev.db"
-//   - Supabase:   DATABASE_URL="postgresql://postgres:password@db.xxx.supabase.co:5432/postgres"
+// Prisma schema for Vectra — PostgreSQL (Supabase)
+// Assurez-vous que DATABASE_URL est configurée avec votre URL Supabase:
+//   postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
