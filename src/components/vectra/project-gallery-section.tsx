@@ -14,6 +14,7 @@ type Project = {
   accent: string;
   domain: string;
   year: string;
+  imageUrl?: string | null;
 };
 
 const PROJECTS: Project[] = [
@@ -80,6 +81,39 @@ const PROJECTS: Project[] = [
 ];
 
 function WebsiteMockup({ project }: { project: Project }) {
+  // Si une image existe, l'afficher à la place du mockup gradient
+  if (project.imageUrl) {
+    return (
+      <div
+        className="relative w-full overflow-hidden rounded-xl border border-white/15 bg-[#2b2344]"
+        style={{ aspectRatio: "4 / 3" }}
+      >
+        {/* Browser chrome */}
+        <div className="flex items-center gap-1.5 border-b border-white/10 bg-white/[0.05] px-3 py-2">
+          <span className="h-2 w-2 rounded-full bg-white/30" />
+          <span className="h-2 w-2 rounded-full bg-white/30" />
+          <span className="h-2 w-2 rounded-full bg-white/30" />
+          <div
+            className="ml-2 flex-1 truncate rounded-md bg-white/8 px-2 py-0.5 text-[10px] text-white/50"
+            style={{ fontFamily: "var(--font-inter)" }}
+          >
+            {project.domain}
+          </div>
+        </div>
+
+        {/* Image du projet */}
+        <div className="relative h-[calc(100%-32px)] w-full overflow-hidden">
+          <img
+            src={project.imageUrl}
+            alt={project.title}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback: mockup gradient CSS (comportement par défaut)
   return (
     <div
       className="relative w-full overflow-hidden rounded-xl border border-white/15 bg-[#2b2344]"

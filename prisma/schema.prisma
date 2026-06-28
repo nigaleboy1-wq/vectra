@@ -30,7 +30,8 @@ model Project {
   description   String
   domain        String
   year          String
-  mockupFrom    String   @default("#7b39fc") // gradient start
+  imageUrl      String?  // URL de l'image uploadée (Supabase Storage ou URL externe)
+  mockupFrom    String   @default("#7b39fc") // gradient start (fallback si pas d'image)
   mockupTo      String   @default("#2b2344") // gradient end
   accent        String   @default("#c4a4ff")
   order         Int      @default(0)

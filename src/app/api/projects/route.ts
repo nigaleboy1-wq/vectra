@@ -14,7 +14,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { title, category, description, domain, year, mockupFrom, mockupTo, accent, order } = body;
+    const { title, category, description, domain, year, imageUrl, mockupFrom, mockupTo, accent, order } = body;
     if (!title || !description) {
       return NextResponse.json({ error: "title and description are required" }, { status: 400 });
     }
@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
       data: {
         title, category: category || "", description, domain: domain || "",
         year: year || new Date().getFullYear().toString(),
+        imageUrl: imageUrl || null,
         mockupFrom: mockupFrom || "#7b39fc", mockupTo: mockupTo || "#2b2344",
         accent: accent || "#c4a4ff", order: order ?? 0,
       },

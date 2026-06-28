@@ -9,8 +9,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       where: { id },
       data: {
         title: body.title, category: body.category, description: body.description,
-        domain: body.domain, year: body.year, mockupFrom: body.mockupFrom,
-        mockupTo: body.mockupTo, accent: body.accent, order: body.order,
+        domain: body.domain, year: body.year,
+        imageUrl: body.imageUrl !== undefined ? body.imageUrl : undefined,
+        mockupFrom: body.mockupFrom, mockupTo: body.mockupTo, accent: body.accent, order: body.order,
       },
     });
     return NextResponse.json(project);

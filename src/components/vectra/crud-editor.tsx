@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Plus, Trash2, Save, X, Pencil, GripVertical, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Save, X, Pencil, GripVertical, AlertCircle, Upload, Image as ImageIcon } from "lucide-react";
 
 type FieldDef = {
   key: string;
   label: string;
-  type: "text" | "textarea" | "number" | "color";
+  type: "text" | "textarea" | "number" | "color" | "image";
   required?: boolean;
 };
 
@@ -259,10 +259,32 @@ function EditModal({
     if (item) data.id = item.id;
     return data;
   });
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
+  };
+
+  const handleImageUpload = async (fieldKey: string, file: File) => {
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Upload échoué" }));
+        throw new Error(err.error || "Upload échoué");
+      }
+      const data = await res.json();
+      setFormData((prev) => ({ ...prev, [fieldKey]: data.url }));
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : "Erreur d'upload");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -312,6 +334,66 @@ function EditModal({
                     onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
                     className="flex-1 bg-white/[0.04] border border-white/12 text-white rounded-lg px-3 py-2 text-[14px] font-mono focus:outline-none focus:border-[#7b39fc]"
                   />
+                </div>
+              ) : field.type === "image" ? (
+                <div className="flex flex-col gap-3">
+                  {/* Image preview */}
+                  {formData[field.key] ? (
+                    <div className="relative rounded-lg overflow-hidden border border-white/12 h-32">
+                      <img
+                        src={String(formData[field.key])}
+                        alt="Aperçu"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, [field.key]: "" })}
+                        className="absolute top-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-red-500/80 transition-colors"
+                        aria-label="Supprimer l'image"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-32 rounded-lg border border-dashed border-white/20 bg-white/[0.02]">
+                      <ImageIcon className="h-8 w-8 text-white/20" />
+                    </div>
+                  )}
+                  {/* Upload button */}
+                  <label className={`inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-4 py-2.5 text-white text-[13px] font-medium cursor-pointer hover:bg-white/10 transition-all ${uploading ? "opacity-60 pointer-events-none" : ""}`}>
+                    {uploading ? (
+                      <>
+                        <span className="inline-block h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Upload en cours…
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4" strokeWidth={2} />
+                        {formData[field.key] ? "Changer l'image" : "Télécharger une image"}
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(field.key, file);
+                      }}
+                    />
+                  </label>
+                  {/* URL input (alternative) */}
+                  <input
+                    type="text"
+                    value={String(formData[field.key] || "")}
+                    onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
+                    placeholder="ou collez une URL d'image…"
+                    className="h-10 bg-white/[0.04] border border-white/12 text-white placeholder:text-white/30 rounded-lg px-3 text-[13px] focus:outline-none focus:border-[#7b39fc]"
+                    style={{ fontFamily: "var(--font-inter)" }}
+                  />
+                  {uploadError && (
+                    <p className="text-red-400 text-[12px]">{uploadError}</p>
+                  )}
                 </div>
               ) : (
                 <input
