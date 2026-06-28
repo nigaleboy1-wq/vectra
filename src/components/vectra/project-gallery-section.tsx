@@ -169,6 +169,19 @@ export default function ProjectGallerySection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
+  const [items, setItems] = useState(PROJECTS);
+
+  // Fetch depuis l'API au montage, fallback sur les données statiques
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setItems(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const compute = () => {
@@ -193,7 +206,7 @@ export default function ProjectGallerySection() {
       if (!card) return;
       const cardWidth = card.offsetWidth + 24;
       const idx = Math.min(
-        PROJECTS.length - 1,
+        items.length - 1,
         Math.max(0, Math.round(-latest / cardWidth))
       );
       setActiveIndex(idx);
@@ -205,7 +218,7 @@ export default function ProjectGallerySection() {
 
   const scrollToIndex = useCallback(
     (idx: number) => {
-      const clamped = Math.max(0, Math.min(PROJECTS.length - 1, idx));
+      const clamped = Math.max(0, Math.min(items.length - 1, idx));
       const track = trackRef.current;
       if (!track) return;
       const card = track.querySelector<HTMLElement>("[data-card]");
@@ -219,7 +232,7 @@ export default function ProjectGallerySection() {
         mass: 0.8,
       });
     },
-    [maxScroll, reduce, x]
+    [maxScroll, reduce, x, items.length]
   );
 
   const handlePrev = useCallback(
@@ -244,10 +257,10 @@ export default function ProjectGallerySection() {
         scrollToIndex(0);
       } else if (e.key === "End") {
         e.preventDefault();
-        scrollToIndex(PROJECTS.length - 1);
+        scrollToIndex(items.length - 1);
       }
     },
-    [handlePrev, handleNext, scrollToIndex]
+    [handlePrev, handleNext, scrollToIndex, items.length]
   );
 
   const opacityRight = useTransform(x, (latest) => {
@@ -303,7 +316,7 @@ export default function ProjectGallerySection() {
               type="button"
               onClick={handlePrev}
               disabled={atStart}
-              aria-label={`Projet précédent (actuellement ${activeIndex + 1} sur ${PROJECTS.length})`}
+              aria-label={`Projet précédent (actuellement ${activeIndex + 1} sur ${items.length})`}
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.92 }}
               className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/[0.05] text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/10 hover:border-[rgba(164,132,215,0.6)] disabled:opacity-30 disabled:cursor-not-allowed"
@@ -314,7 +327,7 @@ export default function ProjectGallerySection() {
               type="button"
               onClick={handleNext}
               disabled={atEnd}
-              aria-label={`Projet suivant (actuellement ${activeIndex + 1} sur ${PROJECTS.length})`}
+              aria-label={`Projet suivant (actuellement ${activeIndex + 1} sur ${items.length})`}
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.92 }}
               className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#7b39fc] text-white shadow-[0_8px_24px_rgba(123,57,252,0.4)] transition-colors duration-200 hover:bg-[#8a4dff] disabled:opacity-30 disabled:cursor-not-allowed"
@@ -357,7 +370,7 @@ export default function ProjectGallerySection() {
             style={{ x, touchAction: "pan-y" } as React.CSSProperties}
             className="flex gap-6 cursor-grab active:cursor-grabbing"
           >
-            {PROJECTS.map((project, i) => {
+            {items.map((project, i) => {
               const isActive = i === activeIndex;
               return (
                 <motion.a
@@ -368,7 +381,7 @@ export default function ProjectGallerySection() {
                   tabIndex={0}
                   role="group"
                   aria-roledescription="slide"
-                  aria-label={`Projet ${i + 1} sur ${PROJECTS.length} : ${project.title}`}
+                  aria-label={`Projet ${i + 1} sur ${items.length} : ${project.title}`}
                   animate={{
                     scale: isActive ? 1 : 0.94,
                     opacity: isActive ? 1 : 0.6,
@@ -454,7 +467,7 @@ export default function ProjectGallerySection() {
           aria-label="Navigation de la galerie de projets"
         >
           <div className="flex items-center gap-1.5">
-            {PROJECTS.map((p, i) => (
+            {items.map((p, i) => (
               <button
                 key={i}
                 type="button"

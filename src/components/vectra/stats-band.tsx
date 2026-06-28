@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView, useMotionValue, useTransform, animate } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Stat = { value: number; suffix: string; label: string; decimals?: number };
 
@@ -44,6 +44,20 @@ function AnimatedCounter({
 }
 
 export default function StatsBand() {
+  const [stats, setStats] = useState(STATS);
+
+  // Fetch depuis l'API au montage, fallback sur les données statiques
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setStats(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="relative z-20 -mt-12 lg:-mt-16 mb-0">
       <div className="max-w-[1100px] mx-auto px-6 lg:px-10">
@@ -54,7 +68,7 @@ export default function StatsBand() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="relative grid grid-cols-2 lg:grid-cols-4"
         >
-          {STATS.map((stat, i) => (
+          {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 12 }}

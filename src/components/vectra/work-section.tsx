@@ -2,9 +2,14 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useMotionValue, useTransform, animate, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import { Reveal } from "./animations";
 import { useSectionTracking, trackCtaClick } from "./analytics";
+
+// Icône de fallback utilisée quand les données viennent de l'API (pas de composant icon)
+function FallbackIcon({ className, strokeWidth }: { className?: string; strokeWidth?: number }) {
+  return <Sparkles className={className} strokeWidth={strokeWidth || 1.5} />;
+}
 
 type Project = {
   title: string;
@@ -275,6 +280,19 @@ export default function WorkSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
+  const [items, setItems] = useState(PROJECTS);
+
+  // Fetch depuis l'API au montage, fallback sur les données statiques
+  useEffect(() => {
+    fetch("/api/services")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setItems(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Recompute scroll bounds on resize / mount
   useEffect(() => {
@@ -304,7 +322,7 @@ export default function WorkSection() {
       if (!card) return;
       const cardWidth = card.offsetWidth + 24; // gap-6 = 24px
       const idx = Math.min(
-        PROJECTS.length - 1,
+        items.length - 1,
         Math.max(0, Math.round(-latest / cardWidth))
       );
       setActiveIndex(idx);
@@ -316,7 +334,7 @@ export default function WorkSection() {
 
   const scrollToIndex = useCallback(
     (idx: number) => {
-      const clamped = Math.max(0, Math.min(PROJECTS.length - 1, idx));
+      const clamped = Math.max(0, Math.min(items.length - 1, idx));
       const track = trackRef.current;
       if (!track) return;
       const card = track.querySelector<HTMLElement>("[data-card]");
@@ -333,7 +351,7 @@ export default function WorkSection() {
       const targetCard = track.querySelectorAll<HTMLElement>("[data-card]")[clamped];
       targetCard?.focus({ preventScroll: true });
     },
-    [maxScroll, reduceMotion, x]
+    [maxScroll, reduceMotion, x, items.length]
   );
 
   const handlePrev = useCallback(() => {
@@ -358,10 +376,10 @@ export default function WorkSection() {
         scrollToIndex(0);
       } else if (e.key === "End") {
         e.preventDefault();
-        scrollToIndex(PROJECTS.length - 1);
+        scrollToIndex(items.length - 1);
       }
     },
-    [handlePrev, handleNext, scrollToIndex]
+    [handlePrev, handleNext, scrollToIndex, items.length]
   );
 
   // Faux gradient fade on the right edge to hint at more content
@@ -421,7 +439,7 @@ export default function WorkSection() {
               type="button"
               onClick={handlePrev}
               disabled={atStart}
-              aria-label={`Service précédent (actuellement ${activeIndex + 1} sur ${PROJECTS.length})`}
+              aria-label={`Service précédent (actuellement ${activeIndex + 1} sur ${items.length})`}
               className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-white transition-all duration-200 hover:bg-white/10 hover:border-[rgba(164,132,215,0.5)] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/[0.04] disabled:hover:border-white/15"
             >
               <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
@@ -430,7 +448,7 @@ export default function WorkSection() {
               type="button"
               onClick={handleNext}
               disabled={atEnd}
-              aria-label={`Service suivant (actuellement ${activeIndex + 1} sur ${PROJECTS.length})`}
+              aria-label={`Service suivant (actuellement ${activeIndex + 1} sur ${items.length})`}
               className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#7b39fc] text-white transition-all duration-200 hover:bg-[#8a4dff] hover:shadow-[0_8px_24px_rgba(123,57,252,0.45)] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-[#7b39fc] disabled:hover:shadow-none"
             >
               <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
@@ -471,8 +489,8 @@ export default function WorkSection() {
             style={{ x, touchAction: "pan-y" } as React.CSSProperties}
             className="flex gap-6 cursor-grab active:cursor-grabbing"
           >
-            {PROJECTS.map((project, i) => {
-              const Icon = project.icon;
+            {items.map((project: any, i: number) => {
+              const Icon = project.icon || FallbackIcon;
               const isActive = i === activeIndex;
               return (
                 <motion.a
@@ -482,7 +500,7 @@ export default function WorkSection() {
                   tabIndex={0}
                   role="group"
                   aria-roledescription="slide"
-                  aria-label={`Service ${i + 1} sur ${PROJECTS.length} : ${project.title}`}
+                  aria-label={`Service ${i + 1} sur ${items.length} : ${project.title}`}
                   animate={{
                     scale: isActive ? 1 : 0.94,
                     opacity: isActive ? 1 : 0.6,
@@ -601,7 +619,7 @@ export default function WorkSection() {
         >
           {/* Dots */}
           <div className="flex items-center gap-1.5">
-            {PROJECTS.map((p, i) => (
+            {items.map((p, i) => (
               <button
                 key={i}
                 type="button"
