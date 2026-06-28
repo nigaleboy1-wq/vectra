@@ -15,7 +15,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json(testimonial);
   } catch (error) {
     console.error("PUT /api/testimonials error:", error);
-    return NextResponse.json({ error: "Failed to update testimonial" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to update testimonial: " + String(error) }, { status: 500 });
   }
 }
 
@@ -26,6 +26,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("DELETE /api/testimonials error:", error);
-    return NextResponse.json({ error: "Failed to delete testimonial" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to delete testimonial: " + String(error) }, { status: 500 });
   }
 }

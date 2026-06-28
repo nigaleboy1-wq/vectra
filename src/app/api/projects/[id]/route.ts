@@ -16,7 +16,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json(project);
   } catch (error) {
     console.error("PUT /api/projects error:", error);
-    return NextResponse.json({ error: "Failed to update project" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to update project: " + String(error) }, { status: 500 });
   }
 }
 
@@ -27,6 +27,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("DELETE /api/projects error:", error);
-    return NextResponse.json({ error: "Failed to delete project" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to delete project: " + String(error) }, { status: 500 });
   }
 }

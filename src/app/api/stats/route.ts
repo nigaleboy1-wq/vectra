@@ -24,6 +24,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(stat, { status: 201 });
   } catch (error) {
     console.error("POST /api/stats error:", error);
-    return NextResponse.json({ error: "Failed to create stat" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create stat: " + String(error) }, { status: 500 });
   }
 }

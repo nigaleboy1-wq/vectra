@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Plus, Trash2, Save, X, Pencil, GripVertical } from "lucide-react";
+import { Plus, Trash2, Save, X, Pencil, GripVertical, AlertCircle } from "lucide-react";
 
 type FieldDef = {
   key: string;
@@ -30,6 +30,8 @@ export default function CrudEditor({
   const [editing, setEditing] = useState<Item | null>(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(apiPath)
@@ -41,8 +43,14 @@ export default function CrudEditor({
       .catch(() => setLoading(false));
   }, [apiPath]);
 
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
+
   const handleSave = async (data: Record<string, unknown>) => {
     setSaving(true);
+    setError(null);
     const method = editing ? "PUT" : "POST";
     const url = editing ? `${apiPath}/${editing.id}` : apiPath;
 
@@ -52,17 +60,25 @@ export default function CrudEditor({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (res.ok) {
-        const saved = await res.json();
-        if (editing) {
-          setItems((prev) => prev.map((i) => (i.id === saved.id ? saved : i)));
-        } else {
-          setItems((prev) => [...prev, saved]);
-        }
-        setEditing(null);
-        setCreating(false);
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "Erreur inconnue");
+        throw new Error(`Erreur ${res.status}: ${errText}`);
       }
+
+      const saved = await res.json();
+      if (editing) {
+        setItems((prev) => prev.map((i) => (i.id === saved.id ? saved : i)));
+        showToast(`${itemName} modifié avec succès ✓`);
+      } else {
+        setItems((prev) => [...prev, saved]);
+        showToast(`${itemName} créé avec succès ✓`);
+      }
+      setEditing(null);
+      setCreating(false);
     } catch (e) {
+      const msg = e instanceof Error ? e.message : "Erreur de sauvegarde";
+      setError(msg);
       console.error("Save error:", e);
     } finally {
       setSaving(false);
@@ -72,9 +88,13 @@ export default function CrudEditor({
   const handleDelete = async (id: string) => {
     if (!confirm(`Supprimer cet ${itemName} ?`)) return;
     try {
-      await fetch(`${apiPath}/${id}`, { method: "DELETE" });
+      const res = await fetch(`${apiPath}/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Erreur de suppression");
       setItems((prev) => prev.filter((i) => i.id !== id));
+      showToast(`${itemName} supprimé ✓`);
     } catch (e) {
+      const msg = e instanceof Error ? e.message : "Erreur de suppression";
+      setError(msg);
       console.error("Delete error:", e);
     }
   };
@@ -89,6 +109,13 @@ export default function CrudEditor({
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Toast notification */}
+      {toast && (
+        <div className="fixed top-6 right-6 z-[60] rounded-lg bg-[#7b39fc] px-5 py-3 text-white text-[14px] font-medium shadow-[0_10px_30px_rgba(123,57,252,0.4)] animate-in fade-in slide-in-from-top-4" style={{ fontFamily: "var(--font-inter)" }}>
+          {toast}
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -106,6 +133,7 @@ export default function CrudEditor({
           onClick={() => {
             setCreating(true);
             setEditing(null);
+            setError(null);
           }}
           className="inline-flex items-center gap-2 rounded-lg bg-[#7b39fc] px-4 py-2.5 text-white text-[13px] font-semibold hover:bg-[#8a4dff] transition-all"
           style={{ fontFamily: "var(--font-manrope)" }}
@@ -114,6 +142,24 @@ export default function CrudEditor({
           Ajouter
         </button>
       </div>
+
+      {/* Error banner */}
+      {error && (
+        <div className="flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-4">
+          <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-red-400 text-[13px] font-medium" style={{ fontFamily: "var(--font-inter)" }}>
+              Erreur
+            </p>
+            <p className="text-white/70 text-[12px] mt-0.5" style={{ fontFamily: "var(--font-inter)" }}>
+              {error}
+            </p>
+          </div>
+          <button onClick={() => setError(null)} className="text-white/40 hover:text-white">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {/* Items list */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -132,6 +178,7 @@ export default function CrudEditor({
                   onClick={() => {
                     setEditing(item);
                     setCreating(false);
+                    setError(null);
                   }}
                   className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-all"
                   aria-label="Modifier"
@@ -181,6 +228,7 @@ export default function CrudEditor({
           onClose={() => {
             setEditing(null);
             setCreating(false);
+            setError(null);
           }}
         />
       )}
@@ -226,7 +274,7 @@ function EditModal({
         className="w-full max-w-[560px] max-h-[90vh] overflow-y-auto rounded-2xl border border-white/15 bg-[#2b2344] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-5 border-b border-white/10">
+        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 bg-[#2b2344] z-10">
           <h2 className="text-white text-lg font-semibold" style={{ fontFamily: "var(--font-manrope)" }}>
             {item ? "Modifier" : "Créer"} — {itemName}
           </h2>
@@ -287,11 +335,20 @@ function EditModal({
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#7b39fc] px-5 py-2.5 text-white text-[14px] font-semibold hover:bg-[#8a4dff] disabled:opacity-60 transition-all"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#7b39fc] px-5 py-2.5 text-white text-[14px] font-semibold hover:bg-[#8a4dff] disabled:opacity-60 disabled:cursor-wait transition-all"
               style={{ fontFamily: "var(--font-cabin)" }}
             >
-              <Save className="h-4 w-4" strokeWidth={2} />
-              {saving ? "Enregistrement…" : "Enregistrer"}
+              {saving ? (
+                <>
+                  <span className="inline-block h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Enregistrement…
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" strokeWidth={2} />
+                  Enregistrer
+                </>
+              )}
             </button>
             <button
               type="button"

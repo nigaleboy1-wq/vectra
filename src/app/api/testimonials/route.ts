@@ -28,6 +28,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(testimonial, { status: 201 });
   } catch (error) {
     console.error("POST /api/testimonials error:", error);
-    return NextResponse.json({ error: "Failed to create testimonial" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create testimonial: " + String(error) }, { status: 500 });
   }
 }
