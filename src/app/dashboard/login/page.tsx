@@ -1,17 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useDashboardAuth } from "@/components/vectra/dashboard-auth";
 import { Lock, ArrowRight } from "lucide-react";
 
 export default function DashboardLoginPage() {
   const { login } = useDashboardAuth();
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!login(password)) {
+    if (login(password)) {
+      // Redirect vers le dashboard après connexion réussie
+      router.replace("/dashboard");
+    } else {
       setError(true);
       setPassword("");
     }

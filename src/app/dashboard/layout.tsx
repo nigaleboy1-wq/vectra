@@ -30,10 +30,12 @@ function DashboardShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Not authed → redirect to login (must be before any conditional return)
+  // Redirect logic: login → dashboard si authentifié, dashboard → login si non
   useEffect(() => {
     if (!isAuthed && pathname !== "/dashboard/login") {
       router.replace("/dashboard/login");
+    } else if (isAuthed && pathname === "/dashboard/login") {
+      router.replace("/dashboard");
     }
   }, [isAuthed, pathname, router]);
 
